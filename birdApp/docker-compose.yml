@@ -17,6 +17,16 @@ services:
       - "4200:4200"
     networks:
       - bird-app-net
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "8080:80"
+    depends_on: 
+      - bird-image-api
+      - bird-api
+    networks:
+      - bird-app-net
  
 networks:
   bird-app-net:
