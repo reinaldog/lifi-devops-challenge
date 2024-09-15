@@ -6,8 +6,6 @@ services:
       - "4201:4201"
     depends_on: 
       - bird-image-api
-    environment:
-      - BIRD_IMAGE_API=http://bird-image-api:4200
     networks:
       - bird-app-net
   bird-image-api:
