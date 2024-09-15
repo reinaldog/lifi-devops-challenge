@@ -1,3 +1,3 @@
 window.env = {
-  API_URL: "http:localhost:4201"
+  API_URL: "http://bird-api:4201"
 }
