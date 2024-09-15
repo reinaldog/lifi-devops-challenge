@@ -1,0 +1,20 @@
+services:
+  bird-api:
+    build:
+      context: ./bird
+    ports:
+      - "4201:4201"
+    depends_on: 
+      - bird-image-api
+    networks:
+      - bird-app-net
+  bird-image-api:
+    build:
+      context: ./birdImage
+    ports:
+      - "4200:4200"
+    networks:
+      - bird-app-net
+ 
+networks:
+  bird-app-net:
