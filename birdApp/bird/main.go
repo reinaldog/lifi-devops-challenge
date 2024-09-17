@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
   "os"
+  "github.com/rs/cors"
 )
 
 type Bird struct {
@@ -69,6 +70,8 @@ func bird(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", bird)
-	http.ListenAndServe(":4201", nil)
+  mux := http.NewServeMux()
+	mux.HandleFunc("/", bird)
+  handler := cors.Default().Handler(mux)
+	http.ListenAndServe(":4201", handler)
 }
