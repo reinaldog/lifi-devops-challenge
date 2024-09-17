@@ -5,6 +5,7 @@ This is the bird Application! It gives us birds!!!
 The app is written in Golang and contains 2 APIs:
 - the bird API
 - the birdImage API
+
 An additional frontend component has been added to fetch data from the bird API.
 
 
