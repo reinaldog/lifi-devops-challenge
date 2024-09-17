@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bird App</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
         body {
             display: flex;
@@ -37,7 +38,8 @@
     <script>
         async function fetchData() {
             try {
-                const apiUrl = window.env.API_URL || 'http:localhost:4201';
+                //const apiUrl = window.env.API_URL || 'http://bird-api:4201';
+                const apiUrl = 'http://localhost:4201';
                 const response = await fetch(apiUrl); 
                 const data = await response.json();
                 document.getElementById('name').innerText = data.Name;
