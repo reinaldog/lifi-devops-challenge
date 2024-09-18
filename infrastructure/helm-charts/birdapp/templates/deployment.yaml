@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bird-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bird-api
+  template:
+    metadata:
+      labels:
+        app: bird-api
+    spec:
+      containers:
+      - name: bird-api
+        image: birdapp-bird-api:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 4201
+        env:
+        - name: BIRD_IMAGE_API
+          value: "http://bird-image-api:4200"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bird-image-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bird-image-api
+  template:
+    metadata:
+      labels:
+        app: bird-image-api
+    spec:
+      containers:
+      - name: bird-image-api
+        image: birdapp-bird-image-api:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 4200
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: birdapp-frontend:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
