@@ -1,5 +1,6 @@
 services:
   bird-api:
+    image: birdapp-bird-api:latest
     build:
       context: ./bird
     ports:
@@ -11,6 +12,7 @@ services:
     networks:
       - bird-app-net
   bird-image-api:
+    image: birdapp-bird-image-api:latest
     build:
       context: ./birdImage
     ports:
@@ -18,10 +20,11 @@ services:
     networks:
       - bird-app-net
   frontend:
+    image: birdapp-frontend:latest
     build:
       context: ./frontend
     ports:
-      - "8080:80"
+      - "80:80"
     depends_on: 
       - bird-image-api
       - bird-api
