@@ -9,6 +9,10 @@ resource "aws_instance" "minikube" {
   associate_public_ip_address = true
   key_name = aws_key_pair.tf-deploy.key_name
 
+  root_block_device {
+    volume_size = 20
+  }
+
   vpc_security_group_ids = var.vpc_security_group_ids
   subnet_id              = var.subnet_id
 
