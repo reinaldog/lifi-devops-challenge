@@ -12,23 +12,27 @@ resource "aws_instance" "minikube" {
   vpc_security_group_ids = var.vpc_security_group_ids
   subnet_id              = var.subnet_id
 
-#  provisioner "remote-exec" {
-#    inline = [
-#      "sudo apt update -y",
-#      "sudo apt install -y curl docker",
-#      "sudo apt-get update && sudo apt-get install docker.io -y",
-#      "sudo groupadd docker",
-#      "sudo usermod -aG docker $USER",
-#      "newgrp docker",
-#    ]
-#  connection {
-#    type        = "ssh"
-#    user        = "ubuntu"
-#    private_key = file("~/.ssh/tf-key")
-#    host        = self.public_ip
-#  }
+  connection {
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = file("~/.ssh/tf-key")
+    host        = self.public_ip
+  }
 
-#  }
+  provisioner "file" {
+    source      = "${path.module}/files/ansible-playbook.yaml"
+    destination = "/tmp/playbook.yml"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt update -y",
+      "sudo apt-get update",
+      "sudo apt-get install -y ansible",
+      "cd /tmp/",
+      "sudo ansible-playbook playbook.yml"
+    ]
+
+  }
   tags = {
     Name = "Minikube-Instance"
   }
