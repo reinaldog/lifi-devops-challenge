@@ -1,9 +1,117 @@
 ---
-- name: Deploy Bird App
+- name: Install Requierements and Deploy Bird App
   hosts: localhost
-  become: true
+  become: yes
+
+  vars:
+    ansible_user: ubuntu 
+    git_repo: "https://github.com/reinaldog/lifi-devops-challenge.git"
+
   tasks:
-    - name: Install Docker Compose
+    - name: Update apt package index
       apt:
-        name: docker-compose-v2
+        update_cache: yes
+
+    - name: Install Docker and Docker Compose
+      apt:
+        name:
+          - docker.io
+          - docker-compose-v2
         state: present
+
+    - name: Download kubectl binary
+      shell: |
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+      args:
+        chdir: /tmp
+
+    - name: Download kubectl checksum
+      shell: |
+        curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+      args:
+        chdir: /tmp
+
+    - name: Verify kubectl checksum
+      shell: |
+        echo "$(cat /tmp/kubectl.sha256)  /tmp/kubectl" | sha256sum --check
+      register: kubectl_checksum
+      failed_when: kubectl_checksum.rc != 0
+
+    - name: Move kubectl to /usr/local/bin
+      shell: mv /tmp/kubectl /usr/local/bin/kubectl
+
+    - name: Set permissions for kubectl
+      file:
+        path: /usr/local/bin/kubectl
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Download Minikube binary
+      shell: curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+      args:
+        chdir: /tmp
+
+    - name: Install Minikube
+      shell: install /tmp/minikube-linux-amd64 /usr/local/bin/minikube
+
+    - name: Ensure user is in docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    - name: Start Minikube as regular user
+      become: no
+      become_user: "{{ ansible_user }}"
+      shell: minikube start
+
+    - name: Download Helm install script
+      shell: curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+      args:
+        chdir: /tmp
+
+    - name: Set execute permission on Helm install script
+      file:
+        path: /tmp/get_helm.sh
+        mode: '0700'
+        state: file
+
+    - name: Run Helm install script
+      shell: /tmp/get_helm.sh
+
+    - name: Clone GitHub repository
+      become: no
+      become_user: "{{ ansible_user }}"
+      git:
+        repo: "{{ git_repo }}"
+        dest: bird-app
+
+    - name: Build images using docker compose 
+      become: no
+      become_user: "{{ ansible_user }}"
+      shell: docker compose build 
+      args:
+        chdir: bird-app/app
+
+    - name: Load bird-api Docker image to Minikube
+      become: no
+      become_user: "{{ ansible_user }}"
+      shell: minikube image load birdapp-bird-api
+
+    - name: Load bird-image-api Docker image to Minikube
+      become: no
+      become_user: "{{ ansible_user }}"
+      shell: minikube image load birdapp-bird-image-api
+
+    - name: Load frontend Docker image to Minikube
+      become: no
+      become_user: "{{ ansible_user }}"
+      shell: minikube image load birdapp-frontend
+
+    - name: Deploy Helm Chart
+      become: no
+      become_user: "{{ ansible_user }}"
+      shell: helm install birdapp ./birdapp
+      args:
+        chdir: bird-app/infrastructure/helm-charts

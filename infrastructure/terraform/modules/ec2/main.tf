@@ -9,6 +9,10 @@ resource "aws_instance" "minikube" {
   associate_public_ip_address = true
   key_name = aws_key_pair.tf-deploy.key_name
 
+  root_block_device {
+    volume_size = 20
+  }
+
   vpc_security_group_ids = var.vpc_security_group_ids
   subnet_id              = var.subnet_id
 
@@ -16,6 +20,7 @@ resource "aws_instance" "minikube" {
               #!/bin/bash
               groupadd docker || true
               usermod -aG docker ubuntu
+              newgrp docker
               EOF
 
   connection {
@@ -27,7 +32,7 @@ resource "aws_instance" "minikube" {
 
   provisioner "file" {
     source      = "${path.module}/files/ansible-playbook.yaml"
-    destination = "/tmp/playbook.yaml"
+    destination = "playbook.yaml"
   }
 
 
@@ -37,8 +42,7 @@ resource "aws_instance" "minikube" {
       "sudo apt update -y",
       "sudo apt-get update",
       "sudo apt-get install -y ansible docker.io docker-compose-v2",
-      "cd /tmp/",
-      "sudo ansible-playbook playbook.yaml"
+      "ansible-playbook playbook.yaml"
     ]
 
   }

@@ -27,6 +27,21 @@
             height: auto;
             border-radius: 8px;
         }
+        .reload-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #3f49e1 ;
+            color: white;
+        }
+        .reload-button:hover {
+            background-color: rgb(124, 131, 235);
+        }
+
     </style>
 </head>
 <body>
@@ -34,6 +49,9 @@
         <h1 id="name"></h1>
         <p id="description"></p>
         <img id="image" src="" alt="Image">
+        <div>
+        <button class="reload-button" onclick="fetchData()">Get Bird</button>
+        </div>
     </div>
     <script>
         async function fetchData() {
