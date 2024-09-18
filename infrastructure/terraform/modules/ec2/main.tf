@@ -12,6 +12,12 @@ resource "aws_instance" "minikube" {
   vpc_security_group_ids = var.vpc_security_group_ids
   subnet_id              = var.subnet_id
 
+  user_data = <<-EOF
+              #!/bin/bash
+              groupadd docker || true
+              usermod -aG docker ubuntu
+              EOF
+
   connection {
     type        = "ssh"
     user        = "ubuntu"
@@ -21,15 +27,18 @@ resource "aws_instance" "minikube" {
 
   provisioner "file" {
     source      = "${path.module}/files/ansible-playbook.yaml"
-    destination = "/tmp/playbook.yml"
+    destination = "/tmp/playbook.yaml"
   }
+
+
+
   provisioner "remote-exec" {
     inline = [
       "sudo apt update -y",
       "sudo apt-get update",
-      "sudo apt-get install -y ansible",
+      "sudo apt-get install -y ansible docker.io docker-compose-v2",
       "cd /tmp/",
-      "sudo ansible-playbook playbook.yml"
+      "sudo ansible-playbook playbook.yaml"
     ]
 
   }

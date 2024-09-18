@@ -3,7 +3,7 @@
   hosts: localhost
   become: true
   tasks:
-    - name: Install Docker
+    - name: Install Docker Compose
       apt:
-        name: docker.io
+        name: docker-compose-v2
         state: present
