@@ -9,7 +9,7 @@ The app is written in Golang and contains 2 APIs:
 An additional frontend component has been added to fetch data from the bird API.
 
 # Detailed Process Documentation
-[Assignment Documentation](https://app.affine.pro/share/95eda79d-0d58-4b26-9dc4-934a9a7b7b91/sUjLw2RJmM8aIcRYymcJK)
+[Assignment Documentation](https://app.affine.pro/share/95eda79d-0d58-4b26-9dc4-934a9a7b7b91/kJD4xBEVZ8pOpDJWCiMo2)
 
 # Installation & How To run it
 
